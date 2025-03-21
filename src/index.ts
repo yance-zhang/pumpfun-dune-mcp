@@ -1,17 +1,15 @@
-// dune-server.ts
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
-  ListResourcesRequestSchema,
-  ReadResourceRequestSchema,
-  ListToolsRequestSchema,
   CallToolRequestSchema,
   ErrorCode,
+  ListResourcesRequestSchema,
+  ListToolsRequestSchema,
   McpError,
 } from "@modelcontextprotocol/sdk/types.js";
-import dotenv from "dotenv";
 import AbortController from "abort-controller";
-import { DuneClient } from "@duneanalytics/client-sdk";
+import axios from "axios";
+import dotenv from "dotenv";
 
 (global as any).AbortController = AbortController;
 
@@ -24,13 +22,9 @@ if (!DUNE_API_KEY) {
   throw new Error("DUNE_API_KEY environment variable is required");
 }
 
-const fetchOptions = {
-  method: "GET",
-  headers: { "X-DUNE-API-KEY": DUNE_API_KEY },
-};
-
 class DuneDataServer {
   private server: Server;
+  private axiosInstance;
 
   constructor() {
     this.server = new Server(
@@ -45,6 +39,13 @@ class DuneDataServer {
         },
       }
     );
+
+    this.axiosInstance = axios.create({
+      baseURL: DUNE_API_URL,
+      headers: {
+        "X-DUNE-API-KEY": DUNE_API_KEY,
+      },
+    });
 
     this.setupHandlers();
     this.setupErrorHandling();
@@ -150,19 +151,18 @@ class DuneDataServer {
         }
 
         try {
-          const results = await fetch(
-            `${DUNE_API_URL}/query/${query_id}/results`,
-            fetchOptions
+          const response = await this.axiosInstance.get(
+            `/query/${query_id}/results`
           );
 
-          const dashboardData = await results.json();
-          console.error("dashboardData", dashboardData);
+          const dashboardData = response.data.result;
+          console.error("dashboardData", JSON.stringify(dashboardData));
 
           return {
             content: [
               {
                 type: "text",
-                text: JSON.stringify(dashboardData, null, 2),
+                text: JSON.stringify(dashboardData),
               },
             ],
           };
