@@ -59,7 +59,7 @@ On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
 {
   "mcpServers": {
     "pumpfun-dune-demo": {
-      "command": "/path/to/weather-server-mcp-demo/build/index.js"
+      "command": "/path/to/pumpfun-dune-mcp/build/index.js"
     }
   }
 }
