@@ -117,14 +117,14 @@ class DuneDataServer {
               query_id: "3705945",
               description: "Total deployed",
             },
-            // {
-            //   query_id: "3706280",
-            //   description: "Fee & Revenue",
-            // },
-            // {
-            //   query_id: "3919233",
-            //   description: "Monthly transactions and monthly volume",
-            // },
+            {
+              query_id: "3706280",
+              description: "Fee & Revenue",
+            },
+            {
+              query_id: "3919233",
+              description: "Monthly transactions and monthly volume",
+            },
           ];
 
           const jsonString = JSON.stringify(queries, null, 2);
